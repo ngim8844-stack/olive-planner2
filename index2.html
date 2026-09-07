@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Olive Planner</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+  <style>
+:root {
+  --olive-950: #22281a;
+  --olive-900: #2d351f;
+  --olive-800: #3b4728;
+  --olive-700: #506039;
+  --olive-600: #66784c;
+  --sage-200: #d7ddc8;
+  --sage-100: #e8ebdf;
+  --cream: #f3efe4;
+  --paper: #fbf9f2;
+  --line: #d8d2c4;
+  --ink: #25271f;
+  --muted: #77786d;
+  --holiday: #a45242;
+  --holiday-soft: #f3dfd9;
+  --exam: #a67a2e;
+  --exam-soft: #f2e5bd;
+  --shadow: 0 18px 50px rgba(45, 53, 31, 0.12);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: "DM Sans", sans-serif;
+}
+
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+
+.app-shell {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+}
+
+.sidebar {
+  background: var(--olive-950);
+  color: white;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.brand-mark {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: var(--sage-200);
+  color: var(--olive-950);
+  font-weight: 800;
+}
+
+.brand h1 {
+  font-family: "Playfair Display", serif;
+  font-size: 20px;
+  margin: 0;
+}
+
+.brand p {
+  margin: 4px 0 0;
+  color: #bbc3aa;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+}
+
+.nav {
+  display: grid;
+  gap: 8px;
+}
+
+.nav-btn {
+  border: 0;
+  background: transparent;
+  color: #d5dcc8;
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.nav-btn:hover,
+.nav-btn.active {
+  background: var(--olive-800);
+  color: white;
+}
+
+.legend {
+  padding: 14px;
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 14px;
+  color: #cdd4bf;
+  font-size: 12px;
+}
+
+.legend p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.holiday-dot { background: #d77a67; }
+.exam-dot { background: #d9ad57; }
+
+.sidebar-footer {
+  margin-top: auto;
+  color: #9fa78f;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.main {
+  padding: 28px;
+  min-width: 0;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  margin: 0 0 5px;
+  color: var(--olive-600);
+  letter-spacing: 0.16em;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.topbar h2,
+.notes-header h3 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  color: var(--olive-950);
+}
+
+.topbar-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.primary-btn,
+.ghost-btn,
+.danger-btn,
+.icon-btn {
+  border-radius: 10px;
+  padding: 10px 14px;
+  border: 1px solid transparent;
+}
+
+.primary-btn {
+  background: var(--olive-800);
+  color: white;
+}
+
+.primary-btn:hover { background: var(--olive-700); }
+
+.ghost-btn {
+  background: transparent;
+  border-color: var(--line);
+  color: var(--olive-900);
+}
+
+.danger-btn {
+  background: #f5e6e2;
+  color: #8f4034;
+}
+
+.icon-btn {
+  background: var(--paper);
+  border-color: var(--line);
+  min-width: 42px;
+}
+
+.view { display: none; }
+.active-view { display: block; }
+
+.planner-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.planner-toolbar h3,
+.month-heading h3 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  color: var(--olive-950);
+  font-size: 24px;
+}
+
+.month-heading { text-align: center; }
+
+.year-switch {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.year-btn {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+}
+
+.year-btn.active {
+  background: var(--olive-800);
+  color: white;
+  border-color: var(--olive-800);
+}
+
+.weekday-row {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-bottom: 0;
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+}
+
+.weekday-row div {
+  background: var(--olive-900);
+  color: white;
+  text-align: center;
+  padding: 10px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 0 0 16px 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+}
+
+.day-cell {
+  min-height: 128px;
+  background: var(--paper);
+  padding: 10px;
+  position: relative;
+  overflow: hidden;
+  transition: 0.15s ease;
+}
+
+.day-cell:hover {
+  transform: translateY(-1px);
+  z-index: 1;
+  box-shadow: 0 8px 20px rgba(45, 53, 31, 0.10);
+}
+
+.day-cell.other-month {
+  background: #ece8dd;
+  color: #aaa89f;
+}
+
+.day-cell.today {
+  outline: 3px solid var(--olive-600);
+  outline-offset: -3px;
+}
+
+.day-cell.holiday { background: var(--holiday-soft); }
+.day-cell.exam { background: var(--exam-soft); }
+
+.day-number {
+  font-size: 12px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.special-label {
+  font-size: 9px;
+  line-height: 1.2;
+  color: var(--holiday);
+  font-weight: 700;
+  text-align: right;
+}
+
+.exam .special-label { color: #805e1d; }
+
+.event-chip {
+  margin-top: 5px;
+  padding: 6px 7px;
+  border-radius: 8px;
+  background: var(--sage-100);
+  color: var(--olive-950);
+  font-size: 10px;
+  line-height: 1.25;
+  cursor: pointer;
+}
+
+.event-chip strong {
+  display: block;
+  font-weight: 700;
+}
+
+.event-chip small { color: var(--muted); }
+
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(150px, 1fr));
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.week-column {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  min-height: 420px;
+  padding: 14px;
+}
+
+.week-column.today {
+  border: 2px solid var(--olive-700);
+}
+
+.week-column h4 {
+  margin: 0 0 4px;
+  font-family: "Playfair Display", serif;
+}
+
+.week-column .week-date {
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 12px;
+}
+
+.week-event {
+  background: var(--sage-100);
+  border-left: 4px solid var(--olive-600);
+  padding: 9px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  font-size: 11px;
+}
+
+.day-panel {
+  max-width: 860px;
+  margin: 0 auto;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.day-summary {
+  padding: 22px;
+  background: var(--olive-900);
+  color: white;
+}
+
+.day-summary h3 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+}
+
+.day-list { padding: 20px; }
+
+.day-event-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.day-event-card h4 { margin: 0 0 6px; }
+
+.day-event-card p {
+  margin: 4px 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.empty-state {
+  color: var(--muted);
+  text-align: center;
+  padding: 38px 10px;
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.note-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+  min-height: 170px;
+  cursor: pointer;
+  box-shadow: 0 10px 28px rgba(45, 53, 31, 0.08);
+}
+
+.note-card h4 {
+  margin: 0 0 10px;
+  font-family: "Playfair Display", serif;
+}
+
+.note-card p {
+  color: var(--muted);
+  white-space: pre-wrap;
+  line-height: 1.55;
+  font-size: 13px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 15, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.hidden { display: none !important; }
+
+.modal {
+  width: min(560px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  background: var(--paper);
+  border-radius: 18px;
+  box-shadow: 0 30px 100px rgba(0,0,0,0.25);
+  padding: 20px;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.modal-head h3 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+}
+
+form {
+  display: grid;
+  gap: 14px;
+}
+
+label {
+  display: grid;
+  gap: 7px;
+  color: var(--olive-900);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+input, textarea, select {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: white;
+  border-radius: 10px;
+  padding: 11px 12px;
+  color: var(--ink);
+}
+
+textarea { resize: vertical; }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.spacer { flex: 1; }
+
+
+.todo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.todo-header h3 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  color: var(--olive-950);
+  font-size: 26px;
+}
+
+.todo-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.stat-card span {
+  font-family: "Playfair Display", serif;
+  color: var(--olive-900);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.stat-card small {
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.todo-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.todo-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.filter-btn {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--muted);
+  padding: 7px 11px;
+  border-radius: 999px;
+}
+
+.filter-btn.active {
+  background: var(--olive-800);
+  border-color: var(--olive-800);
+  color: white;
+}
+
+.todo-list {
+  display: grid;
+  gap: 10px;
+}
+
+.todo-item {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: center;
+  box-shadow: 0 8px 24px rgba(45, 53, 31, 0.06);
+}
+
+.todo-check {
+  width: 21px;
+  height: 21px;
+  accent-color: var(--olive-700);
+}
+
+.todo-content { min-width: 0; }
+.todo-content h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: var(--olive-950);
+}
+.todo-content p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+.todo-item.completed .todo-content h4 {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.todo-item.completed { opacity: 0.68; }
+
+.priority-badge {
+  padding: 5px 8px;
+  border-radius: 999px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.priority-high { background: #f3dfd9; color: #884234; }
+.priority-medium { background: #eee7c9; color: #75601f; }
+.priority-low { background: var(--sage-100); color: var(--olive-700); }
+
+.todo-day-block {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.todo-day-block h4 {
+  margin: 0 0 10px;
+  font-family: "Playfair Display", serif;
+  color: var(--olive-900);
+}
+.todo-mini {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 10px;
+  background: var(--sage-100);
+  border-radius: 10px;
+  margin-bottom: 7px;
+  font-size: 12px;
+}
+.todo-mini.done { opacity: .6; text-decoration: line-through; }
+
+.checkbox-label {
+  display: flex;
+  grid-template-columns: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 9px;
+}
+.checkbox-label input { width: auto; }
+
+@media (max-width: 900px) {
+  .app-shell { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    padding: 14px;
+    gap: 14px;
+  }
+
+  .brand,
+  .legend,
+  .sidebar-footer { display: none; }
+
+  .nav {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .nav-btn {
+    text-align: center;
+    padding: 10px 8px;
+  }
+
+  .main { padding: 16px; }
+
+  .calendar-grid,
+  .weekday-row {
+    min-width: 760px;
+  }
+
+  #monthView {
+    overflow-x: auto;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 560px) {
+  .todo-stats { grid-template-columns: 1fr; }
+  .todo-item { grid-template-columns: auto minmax(0, 1fr); }
+  .priority-badge { grid-column: 2; justify-self: start; }
+  .topbar {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar-actions {
+    width: 100%;
+  }
+
+  .topbar-actions button {
+    flex: 1;
+  }
+}
+
+
+.daily-todo-wrap {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+}
+.daily-todo-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.daily-todo-head h4 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 18px;
+  color: var(--olive-950);
+}
+.daily-todo-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.daily-todo-input-row input {
+  width: 100%;
+}
+.todo-list {
+  display: grid;
+  gap: 8px;
+}
+.todo-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+}
+.todo-item.done .todo-text {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+.todo-check {
+  width: 18px;
+  height: 18px;
+}
+.todo-delete {
+  border: 0;
+  background: transparent;
+  color: #9b5a4e;
+  font-size: 16px;
+  padding: 2px 5px;
+}
+.todo-count-chip {
+  margin-top: 5px;
+  padding: 5px 7px;
+  border-radius: 8px;
+  background: #eef0e8;
+  color: var(--olive-700);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+.week-goals-panel {
+  margin-top: 22px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 12px 30px rgba(45, 53, 31, 0.08);
+}
+
+.week-goals-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.week-goals-header h4 {
+  margin: 0;
+  font-family: "Playfair Display", serif;
+  font-size: 21px;
+  color: var(--olive-950);
+}
+
+.week-goals-header p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.week-goals-progress {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--olive-700);
+  white-space: nowrap;
+}
+
+.week-goal-input-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.week-goal-list {
+  display: grid;
+  gap: 8px;
+}
+
+.week-goal-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 12px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: white;
+}
+
+.week-goal-item.done .week-goal-text {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+.week-goal-check {
+  width: 18px;
+  height: 18px;
+}
+
+.week-goal-delete {
+  border: 0;
+  background: transparent;
+  color: #9b5a4e;
+  font-size: 18px;
+  padding: 2px 6px;
+}
+
+.week-goal-empty {
+  padding: 20px 8px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .week-goals-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">OP</div>
+        <div>
+          <h1>Olive Planner</h1>
+          <p>2026 — 2027</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <button class="nav-btn active" data-view="month">Month</button>
+        <button class="nav-btn" data-view="week">Week</button>
+        <button class="nav-btn" data-view="day">Day</button>
+                <button class="nav-btn" data-view="notes">Notes</button>
+      </nav>
+
+      <div class="legend">
+        <p><span class="dot holiday-dot"></span> Public holiday</p>
+        <p><span class="dot exam-dot"></span> CSAT</p>
+      </div>
+
+      <div class="sidebar-footer">
+        <p>Version 1 · Local browser storage</p>
+        <p>Your events stay in the browser on this device.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">PERSONAL SCHEDULE</p>
+          <h2 id="pageTitle">Monthly Planner</h2>
+        </div>
+
+        <div class="topbar-actions">
+          <button id="todayBtn" class="ghost-btn">Today</button>
+          <button id="addEventBtn" class="primary-btn">+ Add Event</button>
+        </div>
+      </header>
+
+      <section id="monthView" class="view active-view">
+        <div class="planner-toolbar">
+          <button id="prevMonth" class="icon-btn" aria-label="Previous month">←</button>
+          <div class="month-heading">
+            <h3 id="monthLabel"></h3>
+            <div class="year-switch">
+              <button class="year-btn" data-year="2026">2026</button>
+              <button class="year-btn" data-year="2027">2027</button>
+            </div>
+          </div>
+          <button id="nextMonth" class="icon-btn" aria-label="Next month">→</button>
+        </div>
+
+        <div class="weekday-row">
+          <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
+        </div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </section>
+
+      <section id="weekView" class="view">
+        <div class="planner-toolbar">
+          <button id="prevWeek" class="icon-btn">←</button>
+          <h3 id="weekLabel"></h3>
+          <button id="nextWeek" class="icon-btn">→</button>
+        </div>
+        <div id="weekGrid" class="week-grid"></div>
+      </section>
+
+      <section id="dayView" class="view">
+        <div class="planner-toolbar">
+          <button id="prevDay" class="icon-btn">←</button>
+          <h3 id="dayLabel"></h3>
+          <button id="nextDay" class="icon-btn">→</button>
+        </div>
+        <div id="dayPanel" class="day-panel"></div>
+      </section>
+<section id="notesView" class="view">
+        <div class="notes-header">
+          <div>
+            <p class="eyebrow">FREE SPACE</p>
+            <h3>Notes</h3>
+          </div>
+          <button id="addNoteBtn" class="primary-btn">+ New Note</button>
+        </div>
+        <div id="notesGrid" class="notes-grid"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="modalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">EVENT</p>
+          <h3 id="modalTitle">Add Event</h3>
+        </div>
+        <button id="closeModal" class="icon-btn">×</button>
+      </div>
+
+      <form id="eventForm">
+        <input type="hidden" id="eventId" />
+
+        <label>
+          Title
+          <input id="eventTitle" type="text" placeholder="e.g. Study machine learning" required />
+        </label>
+
+        <div class="form-row">
+          <label>
+            Date
+            <input id="eventDate" type="date" min="2026-01-01" max="2027-12-31" required />
+          </label>
+
+          <label>
+            Time
+            <input id="eventTime" type="time" />
+          </label>
+        </div>
+
+        <label>
+          Category
+          <select id="eventCategory">
+            <option value="study">Study</option>
+            <option value="work">Work</option>
+            <option value="personal">Personal</option>
+            <option value="health">Health</option>
+            <option value="other">Other</option>
+          </select>
+        </label>
+
+        <label>
+          Details
+          <textarea id="eventDetails" rows="4" placeholder="Add details..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="deleteEventBtn" class="danger-btn hidden">Delete</button>
+          <div class="spacer"></div>
+          <button type="button" id="cancelModal" class="ghost-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">TASK</p>
+          <h3 id="todoModalTitle">New Task</h3>
+        </div>
+      </div>
+
+        <input type="hidden" id="todoId" />
+
+        <label>
+          Task
+          <input id="todoTitle" type="text" placeholder="e.g. Review Chapter 4" required />
+        </label>
+
+        <div class="form-row">
+          <label>
+            Due date
+            <input id="todoDate" type="date" min="2026-01-01" max="2027-12-31" />
+          </label>
+
+          <label>
+            Priority
+            <select id="todoPriority">
+              <option value="high">High</option>
+              <option value="medium" selected>Medium</option>
+              <option value="low">Low</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Details
+          <textarea id="todoDetails" rows="4" placeholder="Add details..."></textarea>
+        </label>
+
+        <label class="checkbox-label">
+          <input id="todoCompleted" type="checkbox" />
+          Mark as completed
+        </label>
+
+        <div class="modal-actions">
+          <div class="spacer"></div>
+          <button type="submit" class="primary-btn">Save Task</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="noteModalBackdrop" class="modal-backdrop hidden">
+    <div class="modal">
+      <div class="modal-head">
+        <div>
+          <p class="eyebrow">NOTE</p>
+          <h3 id="noteModalTitle">New Note</h3>
+        </div>
+        <button id="closeNoteModal" class="icon-btn">×</button>
+      </div>
+
+      <form id="noteForm">
+        <input type="hidden" id="noteId" />
+
+        <label>
+          Title
+          <input id="noteTitle" type="text" placeholder="Note title" required />
+        </label>
+
+        <label>
+          Content
+          <textarea id="noteContent" rows="8" placeholder="Write anything..."></textarea>
+        </label>
+
+        <div class="modal-actions">
+          <button type="button" id="deleteNoteBtn" class="danger-btn hidden">Delete</button>
+          <div class="spacer"></div>
+          <button type="button" id="cancelNoteModal" class="ghost-btn">Cancel</button>
+          <button type="submit" class="primary-btn">Save Note</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+const STORAGE_KEY = "olivePlannerEventsV1";
+const NOTES_KEY = "olivePlannerNotesV1";
+const TODOS_KEY = "olivePlannerDailyTodosV1";
+const WEEKLY_GOALS_KEY = "olivePlannerWeeklyGoalsV1";
+const TODOS_KEY = "olivePlannerTodosV1";
+
+const holidayData = {
+  "2026-01-01": ["New Year's Day", "holiday"],
+  "2026-02-16": ["Seollal Holiday", "holiday"],
+  "2026-02-17": ["Seollal", "holiday"],
+  "2026-02-18": ["Seollal Holiday", "holiday"],
+  "2026-03-01": ["Independence Movement Day", "holiday"],
+  "2026-03-02": ["Substitute Holiday", "holiday"],
+  "2026-05-01": ["Labor Day", "holiday"],
+  "2026-05-05": ["Children's Day", "holiday"],
+  "2026-05-24": ["Buddha's Birthday", "holiday"],
+  "2026-05-25": ["Substitute Holiday", "holiday"],
+  "2026-06-03": ["Local Election Day", "holiday"],
+  "2026-06-06": ["Memorial Day", "holiday"],
+  "2026-07-17": ["Constitution Day", "holiday"],
+  "2026-08-15": ["Liberation Day", "holiday"],
+  "2026-08-17": ["Substitute Holiday", "holiday"],
+  "2026-09-24": ["Chuseok Holiday", "holiday"],
+  "2026-09-25": ["Chuseok", "holiday"],
+  "2026-09-26": ["Chuseok Holiday", "holiday"],
+  "2026-10-03": ["National Foundation Day", "holiday"],
+  "2026-10-05": ["Substitute Holiday", "holiday"],
+  "2026-10-09": ["Hangul Day", "holiday"],
+  "2026-11-19": ["CSAT", "exam"],
+  "2026-12-25": ["Christmas Day", "holiday"],
+
+  "2027-01-01": ["New Year's Day", "holiday"],
+  "2027-02-07": ["Seollal", "holiday"],
+  "2027-02-08": ["Seollal Holiday", "holiday"],
+  "2027-02-09": ["Substitute Holiday", "holiday"],
+  "2027-03-01": ["Independence Movement Day", "holiday"],
+  "2027-05-01": ["Labor Day", "holiday"],
+  "2027-05-03": ["Substitute Holiday", "holiday"],
+  "2027-05-05": ["Children's Day", "holiday"],
+  "2027-05-13": ["Buddha's Birthday", "holiday"],
+  "2027-06-06": ["Memorial Day", "holiday"],
+  "2027-07-17": ["Constitution Day", "holiday"],
+  "2027-07-19": ["Substitute Holiday", "holiday"],
+  "2027-08-15": ["Liberation Day", "holiday"],
+  "2027-08-16": ["Substitute Holiday", "holiday"],
+  "2027-09-14": ["Chuseok Holiday", "holiday"],
+  "2027-09-15": ["Chuseok", "holiday"],
+  "2027-09-16": ["Chuseok Holiday", "holiday"],
+  "2027-10-03": ["National Foundation Day", "holiday"],
+  "2027-10-04": ["Substitute Holiday", "holiday"],
+  "2027-10-09": ["Hangul Day", "holiday"],
+  "2027-10-11": ["Substitute Holiday", "holiday"],
+  "2027-11-18": ["CSAT", "exam"],
+  "2027-12-25": ["Christmas Day", "holiday"],
+  "2027-12-27": ["Substitute Holiday", "holiday"]
+};
+
+let events = loadJSON(STORAGE_KEY, []);
+let notes = loadJSON(NOTES_KEY, []);
+let todos = loadJSON(TODOS_KEY, []);
+let weeklyGoals = loadJSON(WEEKLY_GOALS_KEY, []);
+let todos = loadJSON(TODOS_KEY, []);
+let weeklyGoals = loadJSON(WEEKLY_GOALS_KEY, []);
+
+const today = new Date();
+let currentDate = clampToPlanner(today);
+let currentView = "month";
+
+const monthNames = [
+  "January","February","March","April","May","June",
+  "July","August","September","October","November","December"
+];
+
+const dayNames = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+function loadJSON(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function saveEvents() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(events));
+}
+
+function saveNotes() {
+  localStorage.setItem(NOTES_KEY, JSON.stringify(notes));
+}
+
+function saveTodos() {
+  localStorage.setItem(TODOS_KEY, JSON.stringify(todos));
+}
+
+function saveWeeklyGoals() {
+  localStorage.setItem(WEEKLY_GOALS_KEY, JSON.stringify(weeklyGoals));
+}
+
+function getWeekKey(date) {
+  const monday = getMonday(date);
+  return toDateKey(monday);
+}
+
+function getGoalsForWeek(weekKey) {
+  return weeklyGoals.filter(goal => goal.weekKey === weekKey);
+}
+
+function addWeeklyGoal(weekKey, text) {
+  const clean = text.trim();
+  if (!clean) return;
+
+  weeklyGoals.push({
+    id: uid(),
+    weekKey,
+    text: clean,
+    done: false
+  });
+
+  saveWeeklyGoals();
+}
+
+function toggleWeeklyGoal(id) {
+  weeklyGoals = weeklyGoals.map(goal =>
+    goal.id === id ? { ...goal, done: !goal.done } : goal
+  );
+  saveWeeklyGoals();
+}
+
+function deleteWeeklyGoal(id) {
+  weeklyGoals = weeklyGoals.filter(goal => goal.id !== id);
+  saveWeeklyGoals();
+}
+
+function getTodosForDate(key) {
+  return todos.filter(todo => todo.date === key);
+}
+
+function addTodoForDate(key, text) {
+  const clean = text.trim();
+  if (!clean) return;
+  todos.push({
+    id: uid(),
+    date: key,
+    text: clean,
+    done: false
+  });
+  saveTodos();
+}
+
+function toggleTodo(id) {
+  todos = todos.map(todo =>
+    todo.id === id ? { ...todo, done: !todo.done } : todo
+  );
+  saveTodos();
+}
+
+function deleteTodo(id) {
+  todos = todos.filter(todo => todo.id !== id);
+  saveTodos();
+}
+
+function saveTodos() {
+  localStorage.setItem(TODOS_KEY, JSON.stringify(todos));
+}
+
+function saveWeeklyGoals() {
+  localStorage.setItem(WEEKLY_GOALS_KEY, JSON.stringify(weeklyGoals));
+}
+
+function getWeekKey(date) {
+  const monday = getMonday(date);
+  return toDateKey(monday);
+}
+
+function getGoalsForWeek(weekKey) {
+  return weeklyGoals.filter(goal => goal.weekKey === weekKey);
+}
+
+function addWeeklyGoal(weekKey, text) {
+  const clean = text.trim();
+  if (!clean) return;
+
+  weeklyGoals.push({
+    id: uid(),
+    weekKey,
+    text: clean,
+    done: false
+  });
+
+  saveWeeklyGoals();
+}
+
+function toggleWeeklyGoal(id) {
+  weeklyGoals = weeklyGoals.map(goal =>
+    goal.id === id ? { ...goal, done: !goal.done } : goal
+  );
+  saveWeeklyGoals();
+}
+
+function deleteWeeklyGoal(id) {
+  weeklyGoals = weeklyGoals.filter(goal => goal.id !== id);
+  saveWeeklyGoals();
+}
+
+function clampToPlanner(date) {
+  const min = new Date(2026, 0, 1);
+  const max = new Date(2027, 11, 31);
+
+  if (date < min) return min;
+  if (date > max) return max;
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function pad(n) {
+  return String(n).padStart(2, "0");
+}
+
+function toDateKey(date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+function parseDateKey(key) {
+  const [y, m, d] = key.split("-").map(Number);
+  return new Date(y, m - 1, d);
+}
+
+function isSameDay(a, b) {
+  return a.getFullYear() === b.getFullYear()
+    && a.getMonth() === b.getMonth()
+    && a.getDate() === b.getDate();
+}
+
+function getEventsForDate(key) {
+  return events
+    .filter(event => event.date === key)
+    .sort((a, b) => (a.time || "99:99").localeCompare(b.time || "99:99"));
+}
+
+function getTodosForDate(key) {
+  return todos.filter(todo => todo.date === key);
+}
+
+function priorityRank(priority) {
+  return { high: 0, medium: 1, low: 2 }[priority] ?? 9;
+}
+
+function getMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d;
+}
+
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2);
+}
+
+function showView(viewName) {
+  currentView = viewName;
+
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active-view"));
+  document.getElementById(`${viewName}View`).classList.add("active-view");
+
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.view === viewName);
+  });
+
+  const titles = {
+    month: "Monthly Planner",
+    week: "Weekly Planner",
+    day: "Daily Planner",
+    notes: "Notes"
+  };
+  document.getElementById("pageTitle").textContent = titles[viewName];
+
+  if (viewName === "month") renderMonth();
+  if (viewName === "week") renderWeek();
+  if (viewName === "day") renderDay();
+  if (viewName === "todo") renderTodos();
+  if (viewName === "notes") renderNotes();
+}
+
+function renderMonth() {
+  currentDate = clampToPlanner(currentDate);
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
+
+  document.getElementById("monthLabel").textContent = `${monthNames[month]} ${year}`;
+
+  document.querySelectorAll(".year-btn").forEach(btn => {
+    btn.classList.toggle("active", Number(btn.dataset.year) === year);
+  });
+
+  const grid = document.getElementById("calendarGrid");
+  grid.innerHTML = "";
+
+  const first = new Date(year, month, 1);
+  const firstDay = first.getDay();
+  const mondayOffset = firstDay === 0 ? 6 : firstDay - 1;
+
+  const gridStart = new Date(year, month, 1 - mondayOffset);
+
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+
+    const key = toDateKey(d);
+    const cell = document.createElement("div");
+    cell.className = "day-cell";
+
+    if (d.getMonth() !== month) cell.classList.add("other-month");
+    if (isSameDay(d, today)) cell.classList.add("today");
+
+    const special = holidayData[key];
+    if (special) cell.classList.add(special[1]);
+
+    const header = document.createElement("div");
+    header.className = "day-number";
+
+    const num = document.createElement("span");
+    num.textContent = d.getDate();
+
+    const specialLabel = document.createElement("span");
+    specialLabel.className = "special-label";
+    specialLabel.textContent = special ? special[0] : "";
+
+    header.appendChild(num);
+    header.appendChild(specialLabel);
+    cell.appendChild(header);
+
+    const dayEvents = getEventsForDate(key).slice(0, 4);
+
+    dayEvents.forEach(event => {
+      const chip = document.createElement("div");
+      chip.className = "event-chip";
+      chip.innerHTML = `<strong>${escapeHTML(event.title)}</strong><small>${event.time || "Anytime"}</small>`;
+      chip.addEventListener("click", e => {
+        e.stopPropagation();
+        openEventModal(event);
+      });
+      cell.appendChild(chip);
+    });
+
+    if (getEventsForDate(key).length > 4) {
+      const more = document.createElement("div");
+      more.className = "event-chip";
+      more.textContent = `+${getEventsForDate(key).length - 4} more`;
+      cell.appendChild(more);
+    }
+
+    const dayTodos = getTodosForDate(key);
+    if (dayTodos.length) {
+      const todoChip = document.createElement("div");
+      todoChip.className = "todo-count-chip";
+      const openCount = dayTodos.filter(todo => !todo.done).length;
+      todoChip.textContent = `${openCount}/${dayTodos.length} To Do`;
+      cell.appendChild(todoChip);
+    }
+
+    const dueTodos = getTodosForDate(key).filter(todo => !todo.completed);
+    if (dueTodos.length) {
+      const taskChip = document.createElement("div");
+      taskChip.className = "event-chip";
+      taskChip.innerHTML = `<strong>✓ ${dueTodos.length} task${dueTodos.length === 1 ? "" : "s"}</strong><small>due</small>`;
+      taskChip.addEventListener("click", e => {
+        e.stopPropagation();
+        currentDate = new Date(d);
+        showView("todo");
+      });
+      cell.appendChild(taskChip);
+    }
+
+    cell.addEventListener("click", () => {
+      if (d.getFullYear() < 2026 || d.getFullYear() > 2027) return;
+      currentDate = new Date(d);
+      showView("day");
+    });
+
+    grid.appendChild(cell);
+  }
+}
+
+function renderWeek() {
+  currentDate = clampToPlanner(currentDate);
+  const monday = getMonday(currentDate);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  document.getElementById("weekLabel").textContent =
+    `${monthNames[monday.getMonth()]} ${monday.getDate()} – ${monthNames[sunday.getMonth()]} ${sunday.getDate()}, ${sunday.getFullYear()}`;
+
+  const grid = document.getElementById("weekGrid");
+  grid.innerHTML = "";
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+
+    const key = toDateKey(d);
+    const col = document.createElement("div");
+    col.className = "week-column";
+
+    if (isSameDay(d, today)) col.classList.add("today");
+
+    const special = holidayData[key];
+
+    col.innerHTML = `
+      <h4>${dayNames[d.getDay()]}</h4>
+      <div class="week-date">${monthNames[d.getMonth()]} ${d.getDate()}${special ? ` · ${escapeHTML(special[0])}` : ""}</div>
+    `;
+
+    const dayEvents = getEventsForDate(key);
+
+    if (!dayEvents.length) {
+      const empty = document.createElement("div");
+      empty.className = "empty-state";
+      empty.textContent = "No events";
+      col.appendChild(empty);
+    } else {
+      dayEvents.forEach(event => {
+        const card = document.createElement("div");
+        card.className = "week-event";
+        card.innerHTML = `<strong>${escapeHTML(event.time || "Anytime")}</strong><br>${escapeHTML(event.title)}`;
+        card.addEventListener("click", () => openEventModal(event));
+        col.appendChild(card);
+      });
+    }
+
+    col.addEventListener("dblclick", () => {
+      currentDate = new Date(d);
+      openEventModal(null, key);
+    });
+
+    grid.appendChild(col);
+  }
+
+  renderWeeklyGoals(monday);
+}
+
+function renderWeeklyGoals(monday) {
+  const oldPanel = document.getElementById("weekGoalsPanel");
+  if (oldPanel) oldPanel.remove();
+
+  const weekKey = getWeekKey(monday);
+  const goals = getGoalsForWeek(weekKey);
+  const doneCount = goals.filter(goal => goal.done).length;
+
+  const panel = document.createElement("section");
+  panel.id = "weekGoalsPanel";
+  panel.className = "week-goals-panel";
+
+  panel.innerHTML = `
+    <div class="week-goals-header">
+      <div>
+        <p class="eyebrow">THIS WEEK</p>
+        <h4>Weekly Goals</h4>
+        <p>Set a few priorities you want to complete before Sunday.</p>
+      </div>
+      <div class="week-goals-progress">${doneCount}/${goals.length} completed</div>
+    </div>
+
+    <div class="week-goal-input-row">
+      <input id="weekGoalInput" type="text" placeholder="Add a weekly goal..." />
+      <button id="weekGoalAddBtn" class="primary-btn">Add Goal</button>
+    </div>
+
+    <div id="weekGoalList" class="week-goal-list"></div>
+  `;
+
+  document.getElementById("weekView").appendChild(panel);
+
+  const list = document.getElementById("weekGoalList");
+
+  if (!goals.length) {
+    const empty = document.createElement("div");
+    empty.className = "week-goal-empty";
+    empty.textContent = "No weekly goals yet.";
+    list.appendChild(empty);
+  } else {
+    goals.forEach(goal => {
+      const item = document.createElement("div");
+      item.className = `week-goal-item${goal.done ? " done" : ""}`;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "week-goal-check";
+      checkbox.checked = goal.done;
+      checkbox.addEventListener("change", () => {
+        toggleWeeklyGoal(goal.id);
+        renderWeeklyGoals(monday);
+      });
+
+      const text = document.createElement("div");
+      text.className = "week-goal-text";
+      text.textContent = goal.text;
+
+      const del = document.createElement("button");
+      del.className = "week-goal-delete";
+      del.textContent = "×";
+      del.title = "Delete";
+      del.addEventListener("click", () => {
+        deleteWeeklyGoal(goal.id);
+        renderWeeklyGoals(monday);
+      });
+
+      item.appendChild(checkbox);
+      item.appendChild(text);
+      item.appendChild(del);
+      list.appendChild(item);
+    });
+  }
+
+  const input = document.getElementById("weekGoalInput");
+  const addBtn = document.getElementById("weekGoalAddBtn");
+
+  const addGoal = () => {
+    addWeeklyGoal(weekKey, input.value);
+    input.value = "";
+    renderWeeklyGoals(monday);
+  };
+
+  addBtn.addEventListener("click", addGoal);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") addGoal();
+  });
+}
+
+function renderDay() {
+  currentDate = clampToPlanner(currentDate);
+  const key = toDateKey(currentDate);
+  const dayEvents = getEventsForDate(key);
+  const dayTodos = getTodosForDate(key);
+  const special = holidayData[key];
+
+  document.getElementById("dayLabel").textContent =
+    `${dayNames[currentDate.getDay()]}, ${monthNames[currentDate.getMonth()]} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
+
+  const panel = document.getElementById("dayPanel");
+
+  panel.innerHTML = `
+    <div class="day-summary">
+      <p class="eyebrow" style="color:#cbd3bc">DAILY FOCUS</p>
+      <h3>${dayEvents.length} event${dayEvents.length === 1 ? "" : "s"} · ${dayTodos.filter(t => !t.done).length} to do${special ? ` · ${escapeHTML(special[0])}` : ""}</h3>
+    </div>
+    <div class="day-list" id="dayList"></div>
+  `;
+
+  const list = document.getElementById("dayList");
+
+  if (!dayEvents.length) {
+    list.innerHTML = `<div class="empty-state">No events yet. Click “+ Add Event” to create one.</div>`;
+  } else {
+    dayEvents.forEach(event => {
+      const card = document.createElement("div");
+      card.className = "day-event-card";
+      card.innerHTML = `
+        <h4>${escapeHTML(event.title)}</h4>
+        <p>${escapeHTML(event.time || "Anytime")} · ${escapeHTML(event.category || "other")}</p>
+        <p>${escapeHTML(event.details || "")}</p>
+      `;
+      card.addEventListener("click", () => openEventModal(event));
+      list.appendChild(card);
+    });
+  }
+
+  const todoWrap = document.createElement("div");
+  todoWrap.className = "daily-todo-wrap";
+  todoWrap.innerHTML = `
+    <div class="daily-todo-head">
+      <h4>To Do</h4>
+      <span>${dayTodos.filter(t => t.done).length}/${dayTodos.length} completed</span>
+    </div>
+
+    <div class="daily-todo-input-row">
+      <input id="dailyTodoInput" type="text" placeholder="Add a task for this day..." />
+      <button id="dailyTodoAddBtn" class="primary-btn">Add</button>
+    </div>
+
+    <div id="dailyTodoList" class="todo-list"></div>
+  `;
+  list.appendChild(todoWrap);
+
+  const todoList = document.getElementById("dailyTodoList");
+
+  if (!dayTodos.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty-state";
+    empty.textContent = "No tasks for this day.";
+    todoList.appendChild(empty);
+  } else {
+    dayTodos.forEach(todo => {
+      const item = document.createElement("div");
+      item.className = `todo-item${todo.done ? " done" : ""}`;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.className = "todo-check";
+      checkbox.checked = todo.done;
+      checkbox.addEventListener("change", () => {
+        toggleTodo(todo.id);
+        renderDay();
+        renderMonth();
+      });
+
+      const text = document.createElement("div");
+      text.className = "todo-text";
+      text.textContent = todo.text;
+
+      const del = document.createElement("button");
+      del.className = "todo-delete";
+      del.textContent = "×";
+      del.title = "Delete";
+      del.addEventListener("click", () => {
+        deleteTodo(todo.id);
+        renderDay();
+        renderMonth();
+      });
+
+      item.appendChild(checkbox);
+      item.appendChild(text);
+      item.appendChild(del);
+      todoList.appendChild(item);
+    });
+  }
+
+  const input = document.getElementById("dailyTodoInput");
+  const addBtn = document.getElementById("dailyTodoAddBtn");
+
+  const addCurrentTodo = () => {
+    addTodoForDate(key, input.value);
+    input.value = "";
+    renderDay();
+    renderMonth();
+  };
+
+  addBtn.addEventListener("click", addCurrentTodo);
+  input.addEventListener("keydown", e => {
+    if (e.key === "Enter") addCurrentTodo();
+  });
+}
+
+function renderNotes() {
+  const grid = document.getElementById("notesGrid");
+  grid.innerHTML = "";
+
+  if (!notes.length) {
+    grid.innerHTML = `<div class="empty-state">No notes yet. Create your first note.</div>`;
+    return;
+  }
+
+  notes.forEach(note => {
+    const card = document.createElement("article");
+    card.className = "note-card";
+    card.innerHTML = `
+      <h4>${escapeHTML(note.title)}</h4>
+      <p>${escapeHTML(note.content || "")}</p>
+    `;
+    card.addEventListener("click", () => openNoteModal(note));
+    grid.appendChild(card);
+  });
+}
+
+function openEventModal(event = null, prefilledDate = null) {
+  const modal = document.getElementById("modalBackdrop");
+  modal.classList.remove("hidden");
+
+  document.getElementById("modalTitle").textContent = event ? "Edit Event" : "Add Event";
+  document.getElementById("eventId").value = event?.id || "";
+  document.getElementById("eventTitle").value = event?.title || "";
+  document.getElementById("eventDate").value = event?.date || prefilledDate || toDateKey(currentDate);
+  document.getElementById("eventTime").value = event?.time || "";
+  document.getElementById("eventCategory").value = event?.category || "study";
+  document.getElementById("eventDetails").value = event?.details || "";
+
+  document.getElementById("deleteEventBtn").classList.toggle("hidden", !event);
+}
+
+function closeEventModal() {
+  document.getElementById("modalBackdrop").classList.add("hidden");
+  document.getElementById("eventForm").reset();
+}
+
+
+
+function openNoteModal(note = null) {
+  document.getElementById("noteModalBackdrop").classList.remove("hidden");
+  document.getElementById("noteModalTitle").textContent = note ? "Edit Note" : "New Note";
+  document.getElementById("noteId").value = note?.id || "";
+  document.getElementById("noteTitle").value = note?.title || "";
+  document.getElementById("noteContent").value = note?.content || "";
+  document.getElementById("deleteNoteBtn").classList.toggle("hidden", !note);
+}
+
+function closeNoteModal() {
+  document.getElementById("noteModalBackdrop").classList.add("hidden");
+  document.getElementById("noteForm").reset();
+}
+
+function escapeHTML(value) {
+  const div = document.createElement("div");
+  div.textContent = value ?? "";
+  return div.innerHTML;
+}
+
+document.querySelectorAll(".nav-btn").forEach(btn => {
+  btn.addEventListener("click", () => showView(btn.dataset.view));
+});
+
+document.querySelectorAll(".year-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentDate = new Date(Number(btn.dataset.year), currentDate.getMonth(), 1);
+    renderMonth();
+  });
+});
+
+document.getElementById("prevMonth").addEventListener("click", () => {
+  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+  currentDate = clampToPlanner(currentDate);
+  renderMonth();
+});
+
+document.getElementById("nextMonth").addEventListener("click", () => {
+  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+  currentDate = clampToPlanner(currentDate);
+  renderMonth();
+});
+
+document.getElementById("prevWeek").addEventListener("click", () => {
+  currentDate.setDate(currentDate.getDate() - 7);
+  currentDate = clampToPlanner(currentDate);
+  renderWeek();
+});
+
+document.getElementById("nextWeek").addEventListener("click", () => {
+  currentDate.setDate(currentDate.getDate() + 7);
+  currentDate = clampToPlanner(currentDate);
+  renderWeek();
+});
+
+document.getElementById("prevDay").addEventListener("click", () => {
+  currentDate.setDate(currentDate.getDate() - 1);
+  currentDate = clampToPlanner(currentDate);
+  renderDay();
+});
+
+document.getElementById("nextDay").addEventListener("click", () => {
+  currentDate.setDate(currentDate.getDate() + 1);
+  currentDate = clampToPlanner(currentDate);
+  renderDay();
+});
+
+document.getElementById("todayBtn").addEventListener("click", () => {
+  currentDate = clampToPlanner(new Date());
+  if (currentView === "notes") showView("month");
+  else showView(currentView);
+});
+
+document.getElementById("addEventBtn").addEventListener("click", () => {
+  openEventModal(null, toDateKey(currentDate));
+});
+
+document.getElementById("closeModal").addEventListener("click", closeEventModal);
+document.getElementById("cancelModal").addEventListener("click", closeEventModal);
+
+document.getElementById("modalBackdrop").addEventListener("click", e => {
+  if (e.target.id === "modalBackdrop") closeEventModal();
+});
+
+document.getElementById("eventForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const id = document.getElementById("eventId").value;
+  const data = {
+    id: id || uid(),
+    title: document.getElementById("eventTitle").value.trim(),
+    date: document.getElementById("eventDate").value,
+    time: document.getElementById("eventTime").value,
+    category: document.getElementById("eventCategory").value,
+    details: document.getElementById("eventDetails").value.trim()
+  };
+
+  if (id) {
+    events = events.map(event => event.id === id ? data : event);
+  } else {
+    events.push(data);
+  }
+
+  currentDate = parseDateKey(data.date);
+  saveEvents();
+  closeEventModal();
+
+  if (currentView === "month") renderMonth();
+  if (currentView === "week") renderWeek();
+  if (currentView === "day") renderDay();
+});
+
+document.getElementById("deleteEventBtn").addEventListener("click", () => {
+  const id = document.getElementById("eventId").value;
+  if (!id) return;
+
+  events = events.filter(event => event.id !== id);
+  saveEvents();
+  closeEventModal();
+
+  if (currentView === "month") renderMonth();
+  if (currentView === "week") renderWeek();
+  if (currentView === "day") renderDay();
+});
+
+
+});
+
+document.querySelectorAll(".filter-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn").forEach(b => b.classList.toggle("active", b === btn));
+    renderTodos();
+  });
+});
+
+  e.preventDefault();
+  const id = document.getElementById("todoId").value;
+  const data = {
+    id: id || uid(),
+    title: document.getElementById("todoTitle").value.trim(),
+    date: document.getElementById("todoDate").value,
+    priority: document.getElementById("todoPriority").value,
+    details: document.getElementById("todoDetails").value.trim(),
+    completed: document.getElementById("todoCompleted").checked
+  };
+
+  if (id) todos = todos.map(todo => todo.id === id ? data : todo);
+  else todos.unshift(data);
+
+  saveTodos();
+  renderTodos();
+  if (currentView === "month") renderMonth();
+  if (currentView === "day") renderDay();
+});
+
+  const id = document.getElementById("todoId").value;
+  if (!id) return;
+  todos = todos.filter(todo => todo.id !== id);
+  saveTodos();
+  renderTodos();
+  if (currentView === "month") renderMonth();
+  if (currentView === "day") renderDay();
+});
+
+document.getElementById("addNoteBtn").addEventListener("click", () => openNoteModal());
+document.getElementById("closeNoteModal").addEventListener("click", closeNoteModal);
+document.getElementById("cancelNoteModal").addEventListener("click", closeNoteModal);
+
+document.getElementById("noteModalBackdrop").addEventListener("click", e => {
+  if (e.target.id === "noteModalBackdrop") closeNoteModal();
+});
+
+document.getElementById("noteForm").addEventListener("submit", e => {
+  e.preventDefault();
+
+  const id = document.getElementById("noteId").value;
+  const data = {
+    id: id || uid(),
+    title: document.getElementById("noteTitle").value.trim(),
+    content: document.getElementById("noteContent").value.trim()
+  };
+
+  if (id) {
+    notes = notes.map(note => note.id === id ? data : note);
+  } else {
+    notes.unshift(data);
+  }
+
+  saveNotes();
+  closeNoteModal();
+  renderNotes();
+});
+
+document.getElementById("deleteNoteBtn").addEventListener("click", () => {
+  const id = document.getElementById("noteId").value;
+  if (!id) return;
+
+  notes = notes.filter(note => note.id !== id);
+  saveNotes();
+  closeNoteModal();
+  renderNotes();
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    closeEventModal();
+    closeNoteModal();
+  }
+});
+
+renderMonth();
+
+</script>
+</body>
+</html>
